@@ -5,7 +5,7 @@ import { JitsiMeetJSType } from '../types/lib-jitsi-meet/JitsiMeetJS.d.ts';
 import JitsiParticipant from '../types/lib-jitsi-meet/JitsiParticipant.d.ts';
 import polyfills from './polyfills.ts';
 
-class JitsiClient {
+export class JitsiClient {
   private connection: JitsiConnection;
   private conference?: JitsiConference;
   private participants: JitsiParticipant[] = [];
@@ -20,6 +20,7 @@ class JitsiClient {
         domain: instance,
         muc: `conference.${instance}`,
       },
+      deploymentInfo: {},
       bosh: `https://${instance}/http-bind?room=${conferenceName}`,
     };
 
@@ -48,7 +49,6 @@ class JitsiClient {
    * Called when the connection to the Jitsi instance has been established successfully
    */
   private onConnectionSuccess() {
-    if (!this.conference) return;
     console.info('Connection established successfully');
     const conferenceOptions: JitsiConferenceOptions = {
       startAudioMuted: false,
@@ -60,12 +60,12 @@ class JitsiClient {
     const { conference: events } = this.JitsiMeetJS.events;
     // ToDo: Fix hardcoded display name
     this.conference.setDisplayName('DJ Jimmi');
-    this.conference.on(events.CONFERENCE_JOINED, this.onConferenceJoined);
-    this.conference.on(events.USER_JOINED, this.updateParticipants);
-    this.conference.on(events.USER_LEFT, this.updateParticipants);
-    this.conference.on(events.DISPLAY_NAME_CHANGED, this.updateParticipants);
+    this.conference.on(events.CONFERENCE_JOINED, this.onConferenceJoined.bind(this));
+    this.conference.on(events.USER_JOINED, this.updateParticipants.bind(this));
+    this.conference.on(events.USER_LEFT, this.updateParticipants.bind(this));
+    this.conference.on(events.DISPLAY_NAME_CHANGED, this.updateParticipants.bind(this));
     // ToDo: Implement Password authentication
-    // this.conference.join(conferencePassword);
+    this.conference.join('');
   }
 
   /**
@@ -81,9 +81,18 @@ class JitsiClient {
   private onDisconnect() {
     console.info('disconnecting!');
     const { connection: events } = this.JitsiMeetJS.events;
-    this.connection.removeEventListener(events.CONNECTION_ESTABLISHED, this.onConnectionSuccess);
-    this.connection.removeEventListener(events.CONNECTION_FAILED, this.onConnectionFailed);
-    this.connection.removeEventListener(events.CONNECTION_DISCONNECTED, this.onDisconnect);
+    this.connection.removeEventListener(
+      events.CONNECTION_ESTABLISHED,
+      this.onConnectionSuccess.bind(this),
+    );
+    this.connection.removeEventListener(
+      events.CONNECTION_FAILED,
+      this.onConnectionFailed.bind(this),
+    );
+    this.connection.removeEventListener(
+      events.CONNECTION_DISCONNECTED,
+      this.onDisconnect.bind(this),
+    );
   }
 
   /**
@@ -92,9 +101,12 @@ class JitsiClient {
   connect(): void {
     this.JitsiMeetJS.init({});
     const { connection: events } = this.JitsiMeetJS.events;
-    this.connection.addEventListener(events.CONNECTION_ESTABLISHED, this.onConnectionSuccess);
-    this.connection.addEventListener(events.CONNECTION_FAILED, this.onConnectionFailed);
-    this.connection.addEventListener(events.CONNECTION_DISCONNECTED, this.onDisconnect);
+    this.connection.addEventListener(
+      events.CONNECTION_ESTABLISHED,
+      this.onConnectionSuccess.bind(this),
+    );
+    this.connection.addEventListener(events.CONNECTION_FAILED, this.onConnectionFailed.bind(this));
+    this.connection.addEventListener(events.CONNECTION_DISCONNECTED, this.onDisconnect.bind(this));
     this.connection.connect({});
   }
 
@@ -112,5 +124,3 @@ class JitsiClient {
     return client;
   }
 }
-
-await JitsiClient.join('meet.jit.si', 'sdjkhfksdjhfksjdhfksdjhfksdjhfksdjhfskdhjf');
