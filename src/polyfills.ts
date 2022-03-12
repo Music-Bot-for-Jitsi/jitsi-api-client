@@ -24,10 +24,10 @@ globalPoly.require = require;
 const werift = require('werift');
 
 /**
- * Add the missing browser API's to the Deno code.
+ * Add the missing browser API's to the globalThis object.
  *
  * @param instance - The domain of the target jitsi instance
- * @returns The JitsiMeetJS API object
+ * @returns A Promise of the JitsiMeetJS API object
  */
 export async function init(instance: string): Promise<JitsiMeetJSType> {
   // define UserAgent which is required by JitsiMeetJS
@@ -51,12 +51,12 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
   Object.defineProperty(XMLHttpRequest.prototype, 'responseXML', {
     get() {
       const { responseText } = (this as XMLHttpRequest);
-      return new xmldom.DOMParser().parseFromString(responseText, 'text/xml');
+      return new DOMParser().parseFromString(responseText, 'text/xml');
     },
   });
   globalPoly.XMLHttpRequest = XMLHttpRequest;
 
-  // disable console trace to reduce spam, as the jitsi xmpp strophe makes intensive use of it
+  // disable console trace to reduce spam as the jitsi xmpp strophe makes intensive use of it
   console.trace = () => {};
 
   // dynamically import the jitsi-meet library from the given instance (requires jquery)

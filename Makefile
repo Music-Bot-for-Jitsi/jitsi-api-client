@@ -1,10 +1,9 @@
 lib_jitsi_meet_repo = ./lib-jitsi-meet-master
 
-# If the first argument is "run_example", parse cli arguments
+# If the first argument is "run_example", turn following targets into cli arguments
 ifeq (run_example,$(firstword $(MAKECMDGOALS)))
-  # use the rest as arguments for "run"
   RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  # ...and turn them into do-nothing targets
+  # turn following targets into do-nothing targets
   $(eval $(RUN_ARGS):;@:)
 endif
 
