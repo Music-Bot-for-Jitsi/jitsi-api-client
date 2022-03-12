@@ -1,17 +1,26 @@
-import jsdom from 'https://esm.sh/jsdom';
+/**
+ * JSDOM and XHR polyfills are imported without types
+ * because of conflicting type definitions with Deno.
+ */
+import jsdom from 'https://dev.jspm.io/jsdom';
 import neoXhr from 'https://dev.jspm.io/neo-xhr';
 import xmldom from 'https://cdn.skypack.dev/@xmldom/xmldom';
 import { createRequire } from 'https://deno.land/std/node/module.ts';
 import { JitsiMeetJSType } from '../types/lib-jitsi-meet/JitsiMeetJS.d.ts';
 
-type PolyXMLHttpRequest = XMLHttpRequest & { new (): XMLHttpRequest; prototype: XMLHttpRequest };
+type PolyJSDOM = { JSDOM: { new (content: string): { window: { document: unknown } } } };
+type PolyXMLHttpRequest = {
+  new (): PolyXMLHttpRequest;
+  prototype: PolyXMLHttpRequest;
+  responseText: string;
+};
 
 interface IGlobalPoly {
-  document: Document;
+  document: unknown;
   require: ReturnType<typeof createRequire>;
   DOMParser: typeof xmldom.DOMParser;
   JitsiMeetJS: JitsiMeetJSType;
-  RTCPeerConnection: RTCPeerConnection;
+  RTCPeerConnection: unknown;
   XMLHttpRequest: PolyXMLHttpRequest;
 }
 
@@ -38,7 +47,7 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
   });
 
   // use jsdom to create a document element.
-  const { JSDOM } = jsdom;
+  const { JSDOM } = jsdom as PolyJSDOM;
   const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
   globalPoly.document = dom.window.document;
   globalPoly.DOMParser = xmldom.DOMParser;
@@ -50,8 +59,8 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
   const { XMLHttpRequest } = neoXhr as ({ XMLHttpRequest: PolyXMLHttpRequest });
   Object.defineProperty(XMLHttpRequest.prototype, 'responseXML', {
     get() {
-      const { responseText } = (this as XMLHttpRequest);
-      return new DOMParser().parseFromString(responseText, 'text/xml');
+      const { responseText } = (this as PolyXMLHttpRequest);
+      return new xmldom.DOMParser().parseFromString(responseText, 'text/xml');
     },
   });
   globalPoly.XMLHttpRequest = XMLHttpRequest;
