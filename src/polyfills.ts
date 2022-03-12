@@ -1,16 +1,18 @@
-import jsdom from 'https://dev.jspm.io/jsdom';
+import jsdom from 'https://esm.sh/jsdom';
 import neoXhr from 'https://dev.jspm.io/neo-xhr';
 import xmldom from 'https://cdn.skypack.dev/@xmldom/xmldom';
 import { createRequire } from 'https://deno.land/std/node/module.ts';
 import { JitsiMeetJSType } from '../types/lib-jitsi-meet/JitsiMeetJS.d.ts';
 
+type PolyXMLHttpRequest = XMLHttpRequest & { new (): XMLHttpRequest; prototype: XMLHttpRequest };
+
 interface IGlobalPoly {
-  document: unknown;
-  require: unknown;
+  document: Document;
+  require: ReturnType<typeof createRequire>;
   DOMParser: typeof xmldom.DOMParser;
   JitsiMeetJS: JitsiMeetJSType;
-  RTCPeerConnection: unknown;
-  XMLHttpRequest: unknown;
+  RTCPeerConnection: RTCPeerConnection;
+  XMLHttpRequest: PolyXMLHttpRequest;
 }
 
 type GlobalPolyType = typeof globalThis & IGlobalPoly;
@@ -36,19 +38,20 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
   });
 
   // use jsdom to create a document element.
-  const { JSDOM } = jsdom as any;
-  var dom = new JSDOM(`<!DOCTYPE html><html><head></head><body></body></html>`);
+  const { JSDOM } = jsdom;
+  const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
   globalPoly.document = dom.window.document;
   globalPoly.DOMParser = xmldom.DOMParser;
 
   // use typescript implementation of WebRTC since this Web API is not supported natively in Deno
   globalPoly.RTCPeerConnection = werift.RTCPeerConnection;
 
-  // use XMLHttpRequest polyfill, this will not be added to Deno at all, because it is legacy stuff
-  const { XMLHttpRequest } = neoXhr as any;
+  // use XMLHttpRequest polyfill, this will not be added to Deno at all because it is legacy stuff
+  const { XMLHttpRequest } = neoXhr as ({ XMLHttpRequest: PolyXMLHttpRequest });
   Object.defineProperty(XMLHttpRequest.prototype, 'responseXML', {
     get() {
-      return new xmldom.DOMParser().parseFromString((this as any).responseText, 'text/xml');
+      const { responseText } = (this as XMLHttpRequest);
+      return new xmldom.DOMParser().parseFromString(responseText, 'text/xml');
     },
   });
   globalPoly.XMLHttpRequest = XMLHttpRequest;
