@@ -3,7 +3,7 @@ import RTC from './RTC.d.ts';
 import JitsiConference from '../../JitsiConference.d.ts';
 
 export default class JitsiRemoteTrack extends JitsiTrack {
-  constructor(rtc: RTC, conference: JitsiConference, ownerEndpointId: string, stream: any, track: any, mediaType: any, videoType: any, ssrc: number, muted: boolean, isP2P: boolean);
+  constructor(rtc: RTC, conference: JitsiConference, ownerEndpointId: string, stream: unknown, track: unknown, mediaType: any, videoType: any, ssrc: number, muted: boolean, isP2P: boolean);
   setMute: ( value: boolean ) => void;
   isMuted: () => boolean;
   getParticipantId: () => string;

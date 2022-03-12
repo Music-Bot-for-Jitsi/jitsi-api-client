@@ -85,8 +85,8 @@ export default class JitsiConference {
   onUserRoleChanged: ( jid: string, role: string ) => void;
   onDisplayNameChanged: ( jid: string, displayName: string ) => void;
   onRemoteTrackAdded: ( track: JitsiRemoteTrack ) => void;
-  onCallAccepted: ( session: unknown, answer: any ) => void; // TODO: answer is a jQuery object, unknown = JingleSessionPC which doesn't exist
-  onTransportInfo: ( session: unknown, transportInfo: any ) => void; // TODO: transportInfo is a jQuery object, unknown = JingleSessionPC which doesn't exist
+  onCallAccepted: ( session: unknown, answer: unknown ) => void; // TODO: answer is a jQuery object, unknown = JingleSessionPC which doesn't exist
+  onTransportInfo: ( session: unknown, transportInfo: unknown ) => void; // TODO: transportInfo is a jQuery object, unknown = JingleSessionPC which doesn't exist
   onRemoteTrackRemoved: ( removedTrack: JitsiRemoteTrack ) => void;
   onIncomingCall: ( jingleSession: unknown, jingleOffer: unknown, now: unknown ) => void; // TODO: unknown = JingleSessionPC which doesn't exist
   onCallEnded: ( jingleSession: unknown, reasonCondition: string, reasonText: string ) => void; // TODO: unknown = JingleSessionPC which doesn't exist

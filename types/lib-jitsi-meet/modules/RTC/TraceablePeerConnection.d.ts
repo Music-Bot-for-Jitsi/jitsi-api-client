@@ -51,7 +51,7 @@ export default class TraceablePeerConnection {
   localUfrag: unknown; // TODO:
   signalingLayer: SignalingLayer; // TODO:
   options: unknown; // TODO:
-  peerconnection: RTCPeerConnection; // TODO: JSDocs refers to RTCPeerConnectionType = RTCPeerConnection
+  peerconnection: unknown; // TODO: JSDocs refers to unknownType = unknown
   videoBitrates: unknown; // TODO:
   tpcUtils: TPCUtils;
   updateLog: Array<unknown>; // TODO:
@@ -94,11 +94,11 @@ export default class TraceablePeerConnection {
   getConfiguredVideoCodec: () => CodecMimeType;
   setDesktopSharingFrameRate: (maxFps: number) => void;
   setVideoCodecs: ( preferredCodec?: CodecMimeType, disabledCodec?: CodecMimeType ) => void;
-  isanyInPc: ( mediaStream: any ) => boolean;
+  isunknownInPc: ( mediaStream: unknown ) => boolean;
   removeTrack: ( localTrack: JitsiLocalTrack ) => void;
-  findSenderByKind: ( mediaType: MediaType ) => RTCRtpSender | undefined; // TODO: possible bug in the JSDocs
-  findReceiverForTrack: ( track: any ) => RTCRtpReceiver | undefined;
-  findSenderForTrack: ( track: any ) => RTCRtpSender | undefined;
+  findSenderByKind: ( mediaType: MediaType ) => unknown | undefined; // TODO: possible bug in the JSDocs
+  findReceiverForTrack: ( track: unknown ) => unknown | undefined;
+  findSenderForTrack: ( track: unknown ) => unknown | undefined;
   replaceTrack: ( oldTrack: JitsiLocalTrack | null, newTrack: JitsiLocalTrack | null ) => Promise<boolean>;
   removeTrackMute: ( localTrack: JitsiLocalTrack ) => Promise<boolean>;
   createDataChannel: ( label: unknown, opts: unknown ) => unknown; // TODO:

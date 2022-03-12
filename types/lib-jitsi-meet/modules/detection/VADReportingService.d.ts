@@ -3,6 +3,6 @@ import EventEmitter from '../../EventEmitter.d.ts';
 
 export default class VADReportingService extends EventEmitter<unknown> { // TODO:
   constructor( intervalDelay: number );
-  static create: ( micDeviceList: any[], intervalDelay: number, createVADProcessor: () => VADProcessor ) => Promise<VADReportingService>;
+  static create: ( micDeviceList: unknown[], intervalDelay: number, createVADProcessor: () => VADProcessor ) => Promise<VADReportingService>;
   destroy: () => void;
 }

@@ -1,7 +1,7 @@
 import { MediaType } from './service/RTC/MediaType.d.ts';
 
 declare class JitsiMediaDevices {
-  enumerateDevices: ( callback: ( devices: any[] ) => void ) => void;
+  enumerateDevices: ( callback: ( devices: unknown[] ) => void ) => void;
   isDeviceListAvailable: () => Promise<boolean>;
   isDeviceChangeAvailable: ( deviceType: string ) => boolean;
   isDevicePermissionGranted: ( type: MediaType ) => Promise<boolean>;

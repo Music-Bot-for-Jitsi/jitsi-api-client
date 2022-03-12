@@ -7,13 +7,13 @@ declare class RTCUtils extends Listenable {
   obtainAudioAndVideoPermissions: ( options: { devices: unknown[], resolution: string, cameraDeviceId: string, micDeviceId: string, desktopSharingFrameRate: { min: unknown, max: unknown } } ) => Promise<unknown>; // TODO:
   isDeviceListAvailable: () => boolean;
   isDeviceChangeAvailable: ( deviceType: string ) => boolean;
-  stopany: ( mediaStream: any ) => void;
+  stopunknown: ( mediaStream: unknown ) => void;
   isDesktopSharingEnabled: () => boolean;
   setAudioOutputDevice: ( deviceId: string ) => Promise<unknown>; // TODO:
   setDesktopSharingFrameRate: (maxFps: number) => void;
   getAudioOutputDevice: () => string;
   getCurrentlyAvailableMediaDevices: () => unknown[]; // TODO:
-  getEventDataForActiveDevice: ( device: any ) => unknown; // TODO:
+  getEventDataForActiveDevice: ( device: unknown ) => unknown; // TODO:
   setSuspendVideo: ( constraints: unknown, enable: boolean ) => void; // TODO:
   arePermissionsGrantedForAvailableDevices: () => boolean;
 }

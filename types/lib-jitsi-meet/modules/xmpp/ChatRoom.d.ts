@@ -5,7 +5,7 @@ import { MediaType } from '../../service/RTC/MediaType.d.ts';
 import AVModeration from "./AVModeration.d.ts";
 
 declare namespace parser {
-  function packet2JSON( xmlElement: unknown, nodes: unknown[] ): void; // TODO:
+  function packet2JSON( xmlunknown: unknown, nodes: unknown[] ): void; // TODO:
   function json2packet( nodes: unknown[], packet: unknown ): void; // TODO:
 }
 
@@ -18,7 +18,7 @@ export default class ChatRoom extends Listenable {
   discoRoomInfo: () => unknown;
   setMeetingId: ( meetingId: string ) => void;
   createNonAnonymousRoom: () => void;
-  onConnStatusChanged: ( status: Strophe.Status ) => void;
+  onConnStatusChanged: ( status: unknown ) => void;
   onPresence: ( pres: unknown ) => void; // TODO:
   setParticipantPropertyListener: ( listener: unknown ) => void; // TODO:
   supportsRestartByTerminate: () => boolean;

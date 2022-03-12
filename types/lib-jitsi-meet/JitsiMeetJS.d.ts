@@ -133,13 +133,13 @@ export type JitsiMeetJSType = {
 
   isCollectingLocalStats: () => boolean;
 
-  enumerateDevices: ( callback: ( availableDevices: any[] ) => void ) => void;
+  enumerateDevices: ( callback: ( availableDevices: unknown[] ) => void ) => void;
 
   getGlobalOnErrorHandler: ( message: string, source: string, lineno?: number, colno?: number, error?: Error ) => void;
 
   setNetworkInfo: (info: { isOnline: boolean } ) => void;
 
-  setVideoTrackContentHints: ( track: any, hint: string ) => void;
+  setVideoTrackContentHints: ( track: unknown, hint: string ) => void;
 
   precallTest: PrecallTest;
 
