@@ -1,7 +1,20 @@
 lib_jitsi_meet_repo = ./lib-jitsi-meet-master
 
+# If the first argument is "run_example", parse cli arguments
+ifeq (run_example,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RUN_ARGS):;@:)
+endif
+
 clean:
 	rm -r types/lib-jitsi-meet
+
+run_example:
+	deno run --location="https://jimmi.xyz/fake/" \
+		--allow-read --allow-net --allow-env \
+		examples/cli.ts $(RUN_ARGS)
 
 types/lib-jitsi-meet:
 	cp -r $(lib_jitsi_meet_repo)/types/hand-crafted/ types/lib-jitsi-meet/
