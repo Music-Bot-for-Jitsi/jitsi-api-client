@@ -69,7 +69,7 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
   console.trace = () => {};
 
   // dynamically import the jitsi-meet library from the given instance (requires jquery)
-  await import('https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js');
+  await import('https://code.jquery.com/jquery-3.6.0.min.js');
   await import(`https://${instance}/libs/lib-jitsi-meet.min.js`);
   const JitsiMeetJS: JitsiMeetJSType = globalPoly.JitsiMeetJS;
   return JitsiMeetJS;
