@@ -1,0 +1,38 @@
+# https://deno.land/manual@v1.19.2/continuous_integration
+
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check_formatting:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: vx.x.x
+      - name: Check formatting
+        run: deno fmt --config deno.json --check
+
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: vx.x.x
+      - name: Lint
+        run: deno lint --config deno.json
+
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: vx.x.x
+      - name: Test
+        run: deno test --config deno.json
