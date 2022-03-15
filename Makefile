@@ -1,4 +1,4 @@
-lib_jitsi_meet_repo = ./lib-jitsi-meet-master
+werift_version = v0.14.2
 
 # If the first argument is "run_example", turn following targets into cli arguments
 ifeq (run_example,$(firstword $(MAKECMDGOALS)))
@@ -8,15 +8,47 @@ ifeq (run_example,$(firstword $(MAKECMDGOALS)))
 endif
 
 clean:
-	rm -r types/lib-jitsi-meet
+	rm -r types/lib-jitsi-meet modules/ bundles/
 
 run_example:
 	deno run --location="https://jimmi.xyz/fake/" \
 		--allow-read --allow-net --allow-env \
 		examples/cli.ts $(RUN_ARGS)
 
-types/lib-jitsi-meet:
-	cp -r $(lib_jitsi_meet_repo)/types/hand-crafted/ types/lib-jitsi-meet/
+modules:
+	mkdir modules
+
+modules/werift:
+	git clone https://github.com/shinyoshiaki/werift-webrtc/ \
+		--branch $(werift_version) \
+		--single-branch \
+		modules/werift
+
+modules/lib-jitsi-meet: modules
+	git clone https://github.com/jitsi/lib-jitsi-meet/ \
+		--branch master \
+		--single-branch \
+		modules/lib-jitsi-meet
+
+bundles:
+	mkdir bundles
+
+define WERIFT_BUNDLE_HEADER
+// werift-webrct $(werift_version) bundled for deno
+import { createRequire } from 'https://deno.land/std/node/module.ts';
+const require = createRequire(import.meta.url);
+var module = {};
+endef
+
+bundles/werift.min.js: bundles modules/werift
+	cd modules/werift && npm i --no-scripts esbuild && npx esbuild packages/webrtc/src/index.ts \
+		--bundle --minify --outfile=bundle.js --platform=node --target=es2020
+	$(file > bundles/werift.min.js,$(WERIFT_BUNDLE_HEADER))
+	cat modules/werift/bundle.js >> bundles/werift.min.js
+	rm modules/werift/bundle.js
+
+types/lib-jitsi-meet: modules/lib-jitsi-meet
+	cp -r modules/lib-jitsi-meet/types/hand-crafted/ types/lib-jitsi-meet/
 	find types/lib-jitsi-meet/ -name "*.d.ts" -exec sed -i \
 		-e "s/JQuery\|HTMLElement\|MediaStream\|MediaStreamTrack\|MediaDeviceInfo\|Element\|RTCPeerConnection\|RTCRtpSender\|RTCRtpReceiver\|RTCRtpEncodingParameters\|RTCSessionDescription\|\(typeof \)\{0,1\}Strophe\.[A-Za-z]\+/unknown/g" \
 		-e "s|\(import .* from ['\"]\.\{1,2\}/[a-zA-Z0-9/\.]\+\)|\1.d.ts|g" \
