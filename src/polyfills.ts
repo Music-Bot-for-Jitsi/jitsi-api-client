@@ -7,8 +7,10 @@ import neoXhr from 'https://dev.jspm.io/neo-xhr';
 import xmldom from 'https://cdn.skypack.dev/@xmldom/xmldom';
 import { createRequire } from 'https://deno.land/std/node/module.ts';
 import { JitsiMeetJSType } from '../types/lib-jitsi-meet/JitsiMeetJS.d.ts';
+import * as werift from '../bundles/werift.min.js';
 
 type PolyJSDOM = { JSDOM: { new (content: string): { window: { document: unknown } } } };
+type PolyWebRTC = { RTCPeerConnection: unknown };
 type PolyXMLHttpRequest = {
   new (): PolyXMLHttpRequest;
   prototype: PolyXMLHttpRequest;
@@ -26,11 +28,6 @@ interface IGlobalPoly {
 
 type GlobalPolyType = typeof globalThis & IGlobalPoly;
 const globalPoly = globalThis as GlobalPolyType;
-
-// require werift from node_modules, as no Deno-compatible CDN was found yet
-const require = createRequire(import.meta.url);
-globalPoly.require = require;
-const werift = require('werift');
 
 /**
  * Add the missing browser API's to the globalThis object.
@@ -53,7 +50,7 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
   globalPoly.DOMParser = xmldom.DOMParser;
 
   // use typescript implementation of WebRTC since this Web API is not supported natively in Deno
-  globalPoly.RTCPeerConnection = werift.RTCPeerConnection;
+  globalPoly.RTCPeerConnection = (werift as PolyWebRTC).RTCPeerConnection;
 
   // use XMLHttpRequest polyfill, this will not be added to Deno at all because it is legacy stuff
   const { XMLHttpRequest } = neoXhr as ({ XMLHttpRequest: PolyXMLHttpRequest });
@@ -67,6 +64,10 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
 
   // disable console trace to reduce spam as the jitsi xmpp strophe makes intensive use of it
   console.trace = () => {};
+
+  // define global require function which is used in lib-jitsi-meet
+  const require = createRequire(import.meta.url);
+  globalPoly.require = require;
 
   // dynamically import the jitsi-meet library from the given instance (requires jquery)
   await import('https://code.jquery.com/jquery-3.6.0.min.js');

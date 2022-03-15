@@ -1,5 +1,7 @@
 # local lib-jitsi-files
 /lib-jitsi-meet*
+# external modules
+/modules/
 
 # Logs
 logs
