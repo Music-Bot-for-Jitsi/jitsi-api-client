@@ -46,7 +46,7 @@ export async function init(instance: string): Promise<JitsiMeetJSType> {
     },
   });
 
-  // use jsdom to create a document element.
+  // use jsdom to create a document element
   const { JSDOM } = jsdom as PolyJSDOM;
   const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
   globalPoly.document = dom.window.document;
