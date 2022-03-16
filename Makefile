@@ -18,7 +18,7 @@ run_example:
 modules:
 	mkdir modules
 
-modules/werift:
+modules/werift: modules
 	git clone https://github.com/shinyoshiaki/werift-webrtc/ \
 		--branch $(werift_version) \
 		--single-branch \
