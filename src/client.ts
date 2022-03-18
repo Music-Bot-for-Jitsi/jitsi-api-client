@@ -1,9 +1,13 @@
 import JitsiConference from '../types/lib-jitsi-meet/JitsiConference.d.ts';
+import { JitsiConferenceEvents } from '../types/lib-jitsi-meet/JitsiConferenceEvents.d.ts';
 import JitsiConnection from '../types/lib-jitsi-meet/JitsiConnection.d.ts';
 import { JitsiConferenceOptions } from '../types/lib-jitsi-meet/JitsiConnection.d.ts';
+import { JitsiConnectionEvents } from '../types/lib-jitsi-meet/JitsiConnectionEvents.d.ts';
 import { JitsiMeetJSType } from '../types/lib-jitsi-meet/JitsiMeetJS.d.ts';
 import JitsiParticipant from '../types/lib-jitsi-meet/JitsiParticipant.d.ts';
 import polyfills from './polyfills.ts';
+
+type Listener = () => void;
 
 export class JitsiClient {
   private connection: JitsiConnection;
@@ -60,10 +64,10 @@ export class JitsiClient {
     const { conference: events } = this.JitsiMeetJS.events;
     // ToDo: Fix hardcoded display name
     this.conference.setDisplayName('DJ Jimmi');
-    this.conference.on(events.CONFERENCE_JOINED, this.onConferenceJoined.bind(this));
-    this.conference.on(events.USER_JOINED, this.updateParticipants.bind(this));
-    this.conference.on(events.USER_LEFT, this.updateParticipants.bind(this));
-    this.conference.on(events.DISPLAY_NAME_CHANGED, this.updateParticipants.bind(this));
+    this.addConferenceEventListener(events.CONFERENCE_JOINED, this.onConferenceJoined);
+    this.addConferenceEventListener(events.USER_JOINED, this.updateParticipants);
+    this.addConferenceEventListener(events.USER_LEFT, this.updateParticipants);
+    this.addConferenceEventListener(events.DISPLAY_NAME_CHANGED, this.updateParticipants);
     // ToDo: Implement Password authentication
     this.conference.join('');
   }
@@ -81,19 +85,58 @@ export class JitsiClient {
   private onDisconnect() {
     console.info('disconnecting!');
     const { connection: events } = this.JitsiMeetJS.events;
-    this.connection.removeEventListener(
-      events.CONNECTION_ESTABLISHED,
-      this.onConnectionSuccess.bind(this),
-    );
-    this.connection.removeEventListener(
-      events.CONNECTION_FAILED,
-      this.onConnectionFailed.bind(this),
-    );
-    this.connection.removeEventListener(
-      events.CONNECTION_DISCONNECTED,
-      this.onDisconnect.bind(this),
-    );
+    this.removeConnectionEventListener(events.CONNECTION_ESTABLISHED, this.onConnectionSuccess);
+    this.removeConnectionEventListener(events.CONNECTION_FAILED, this.onConnectionFailed);
+    this.removeConnectionEventListener(events.CONNECTION_DISCONNECTED, this.onDisconnect);
   }
+
+  /**
+   * Add an event listener to the jitsi connection
+   *
+   * @param event - The connection event
+   * @param listener - The listener function
+   */
+  addConnectionEventListener(event: JitsiConnectionEvents, listener: Listener): void {
+    this.connection.addEventListener(event, listener.bind(this));
+  }
+
+  /**
+   * Remove a listener from the jitsi connection
+   *
+   * @param event - The connection event
+   * @param listener - The listener function
+   */
+  removeConnectionEventListener(event: JitsiConnectionEvents, listener: Listener): void {
+    this.connection.removeEventListener(event, listener.bind(this));
+  }
+
+  /**
+   * Add an event listener to the jitsi conference
+   *
+   * @param event - The conference event
+   * @param listener - The listener function
+   *
+   * @throws {Error}
+   * Thrown if the conference is not initialized
+   */
+  addConferenceEventListener(event: JitsiConferenceEvents, listener: Listener): void {
+    if (!this.conference) throw Error('Conference not initialized');
+    this.conference.on(event, listener.bind(this));
+  }
+
+  /**
+   * Remove a listener from the jitsi conference
+   *
+   * @param event - The conference event
+   * @param listener - The listener function
+   *
+   * @throws {Error}
+   * Thrown if the conference is not initialized
+   */
+     removeConferenceEventListener(event: JitsiConferenceEvents, listener: Listener): void {
+      if (!this.conference) throw Error('Conference not initialized');
+      this.conference.removeEventListener(event, listener.bind(this));
+    }
 
   /**
    * Establish the initial connection to the given JitsiInstance.
@@ -101,12 +144,9 @@ export class JitsiClient {
   connect(): void {
     this.JitsiMeetJS.init({});
     const { connection: events } = this.JitsiMeetJS.events;
-    this.connection.addEventListener(
-      events.CONNECTION_ESTABLISHED,
-      this.onConnectionSuccess.bind(this),
-    );
-    this.connection.addEventListener(events.CONNECTION_FAILED, this.onConnectionFailed.bind(this));
-    this.connection.addEventListener(events.CONNECTION_DISCONNECTED, this.onDisconnect.bind(this));
+    this.addConnectionEventListener(events.CONNECTION_ESTABLISHED, this.onConnectionSuccess);
+    this.addConnectionEventListener(events.CONNECTION_FAILED, this.onConnectionFailed);
+    this.addConnectionEventListener(events.CONNECTION_DISCONNECTED, this.onDisconnect);
     this.connection.connect({});
   }
 
