@@ -1,4 +1,4 @@
-import { JitsiClient } from '../src/client.ts';
+import { JitsiClient } from '../mod.ts';
 
 if (Deno.args.length != 2) {
   console.log('Usage: make run_example <domain> <conference>');
