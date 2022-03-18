@@ -1,6 +1,6 @@
 import JitsiConference from '../types/lib-jitsi-meet/JitsiConference.d.ts';
-import { JitsiConferenceEvents } from '../types/lib-jitsi-meet/JitsiConferenceEvents.d.ts';
 import JitsiConnection from '../types/lib-jitsi-meet/JitsiConnection.d.ts';
+import { JitsiConferenceEvents } from '../types/lib-jitsi-meet/JitsiConferenceEvents.d.ts';
 import { JitsiConferenceOptions } from '../types/lib-jitsi-meet/JitsiConnection.d.ts';
 import { JitsiConnectionEvents } from '../types/lib-jitsi-meet/JitsiConnectionEvents.d.ts';
 import { JitsiMeetJSType } from '../types/lib-jitsi-meet/JitsiMeetJS.d.ts';
@@ -133,10 +133,10 @@ export class JitsiClient {
    * @throws {Error}
    * Thrown if the conference is not initialized
    */
-     removeConferenceEventListener(event: JitsiConferenceEvents, listener: Listener): void {
-      if (!this.conference) throw Error('Conference not initialized');
-      this.conference.removeEventListener(event, listener.bind(this));
-    }
+  removeConferenceEventListener(event: JitsiConferenceEvents, listener: Listener): void {
+    if (!this.conference) throw Error('Conference not initialized');
+    this.conference.removeEventListener(event, listener.bind(this));
+  }
 
   /**
    * Establish the initial connection to the given JitsiInstance.
