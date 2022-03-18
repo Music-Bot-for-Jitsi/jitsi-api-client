@@ -35,4 +35,4 @@ jobs:
         with:
           deno-version: vx.x.x
       - name: Test
-        run: deno test --config deno.json
+        run: deno test --config deno.json --no-check --allow-all
