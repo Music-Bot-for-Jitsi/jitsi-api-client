@@ -1,19 +1,7 @@
 werift_version = v0.14.2
 
-# If the first argument is "run_example", turn following targets into cli arguments
-ifeq (run_example,$(firstword $(MAKECMDGOALS)))
-  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  # turn following targets into do-nothing targets
-  $(eval $(RUN_ARGS):;@:)
-endif
-
 clean:
 	rm -r types/lib-jitsi-meet modules/ bundles/
-
-run_example:
-	deno run --location="https://jimmi.xyz/fake/" \
-		--allow-read --allow-net --allow-env \
-		examples/cli.ts $(RUN_ARGS)
 
 modules:
 	mkdir modules
