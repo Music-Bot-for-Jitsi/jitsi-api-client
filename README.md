@@ -60,3 +60,19 @@
     <img src="https://sonarcloud.io/api/project_badges/measure?project=Music-Bot-for-Jitsi_jitsi-api-client&metric=bugs" alt="Bugs" />
   </a>
 </p>
+
+## Summary
+
+JitsiClient api client is a wrapper around the low-level Jitsi api. It is somewhat experimental because it uses a custom Web-RTC implementation and some polyfills to emulate enough from a browser to use the jitsi api client with deno inside a backend.
+
+## Usage Example
+
+```ts
+import { JitsiClient } from 'https://deno.land/x/jitsi_api_client/mod.ts';
+
+const client = await JitsiClient.join("meet.jit.si", "yourConferenceName");
+// To register a new event listener use client.addConferenceEventListener
+// See src/client.ts for code examples
+```
+
+For more information see [our examples folder](https://github.com/Music-Bot-for-Jitsi/jitsi-api-client/examples).
